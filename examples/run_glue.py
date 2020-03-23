@@ -6,6 +6,7 @@ import logging
 import os
 import random
 
+import pandas as pd
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
@@ -95,7 +96,7 @@ def set_seed(args):
 def train(args, train_dataset, model, tokenizer):
     """ Train the model """
     if args.local_rank in [-1, 0]:
-        tb_writer = SummaryWriter()
+        tb_writer = SummaryWriter(log_dir=os.path.join(args.output_dir,'runs'))
 
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
     train_sampler = RandomSampler(train_dataset) if args.local_rank == -1 else DistributedSampler(train_dataset)
@@ -232,7 +233,7 @@ def train(args, train_dataset, model, tokenizer):
                     if (
                         args.local_rank == -1 and args.evaluate_during_training
                     ):  # Only evaluate when single GPU otherwise metrics may not average well
-                        results = evaluate(args, model, tokenizer)
+                        results,_ = evaluate(args, model, tokenizer)
                         for key, value in results.items():
                             eval_key = "eval_{}".format(key)
                             logs[eval_key] = value
@@ -344,7 +345,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                 logger.info("  %s = %s", key, str(result[key]))
                 writer.write("%s = %s\n" % (key, str(result[key])))
 
-    return results
+    return results, preds
 
 
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):
@@ -458,18 +459,18 @@ def main():
     )
     parser.add_argument(
         "--max_seq_length",
-        default=150,
+        default=100,
         type=int,
         help="The maximum total input sequence length after tokenization. Sequences longer "
         "than this will be truncated, sequences shorter will be padded.",
     )
-    parser.add_argument("--do_train", default=True, type=bool, help="Whether to run training.")
-    parser.add_argument("--do_eval", default=True, type=bool, help="Whether to run eval on the dev set.")
+    parser.add_argument("--do_train", default=True, action="store_true",  help="Whether to run training.")
+    parser.add_argument("--do_eval", default=True, action="store_true",  help="Whether to run eval on the dev set.")
     parser.add_argument(
-        "--evaluate_during_training",  default=True, type=bool, help="Run evaluation during training at each logging step.",
+        "--evaluate_during_training",  default=True,  type=bool, help="Run evaluation during training at each logging step.",
     )
     parser.add_argument(
-        "--do_lower_case",  default=True, type=bool, help="Set this flag if you are using an uncased model.",
+        "--do_lower_case",  default=True, action="store_true",  help="Set this flag if you are using an uncased model.",
     )
 
     parser.add_argument(
@@ -491,39 +492,29 @@ def main():
     parser.add_argument(
         "--num_train_epochs", default=4.0, type=float, help="Total number of training epochs to perform.",
     )
-    parser.add_argument(
-        "--max_steps",
-        default=-1,
-        type=int,
+    parser.add_argument("--max_steps", default=-1,type=int,
         help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
     )
     parser.add_argument("--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps.")
 
     parser.add_argument("--logging_steps", type=int, default=500, help="Log every X updates steps.")
     parser.add_argument("--save_steps", type=int, default=500, help="Save checkpoint every X updates steps.")
-    parser.add_argument(
-        "--eval_all_checkpoints",
-        action="store_true",
+    parser.add_argument("--eval_all_checkpoints", default=True,  action="store_true",
         help="Evaluate all checkpoints starting with the same prefix as model_name ending and ending with step number",
     )
-    parser.add_argument("--no_cuda",  default=False, type=bool, help="Avoid using CUDA when available")
+    parser.add_argument("--no_cuda",  default=False, action="store_true", help="Avoid using CUDA when available")
     parser.add_argument(
-        "--overwrite_output_dir",  default=True, type=bool, help="Overwrite the content of the output directory",
+        "--overwrite_output_dir",  default=True, action="store_true", help="Overwrite the content of the output directory",
     )
     parser.add_argument(
-        "--overwrite_cache",  default=True, type=bool, help="Overwrite the cached training and evaluation sets",
+        "--overwrite_cache",  default=True,  action="store_true", help="Overwrite the cached training and evaluation sets",
     )
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
 
-    parser.add_argument(
-        "--fp16",
-        action="store_true",
+    parser.add_argument("--fp16", action="store_true",
         help="Whether to use 16-bit (mixed) precision (through NVIDIA apex) instead of 32-bit",
     )
-    parser.add_argument(
-        "--fp16_opt_level",
-        type=str,
-        default="O1",
+    parser.add_argument( "--fp16_opt_level",type=str, default="O1",
         help="For fp16: Apex AMP optimization level selected in ['O0', 'O1', 'O2', and 'O3']."
         "See details at https://nvidia.github.io/apex/amp.html",
     )
@@ -590,6 +581,8 @@ def main():
     args.output_mode = output_modes[args.task_name]
     label_list = processor.get_labels()
     num_labels = len(label_list)
+    label2index = {label: i for i, label in enumerate(label_list)}
+    index2label = {i: label for i, label in enumerate(label_list)}
 
     # Load pretrained model and tokenizer
     if args.local_rank not in [-1, 0]:
@@ -668,9 +661,16 @@ def main():
 
             model = model_class.from_pretrained(checkpoint)
             model.to(args.device)
-            result = evaluate(args, model, tokenizer, prefix=prefix)
+            result, preds = evaluate(args, model, tokenizer, prefix=prefix)
             result = dict((k + "_{}".format(global_step), v) for k, v in result.items())
             results.update(result)
+            
+            # 保存预测结果
+            dev_df = pd.read_csv(os.path.join(args.data_dir, 'dev.tsv'),sep='\t')
+            assert len(dev_df) == len(preds)
+            preds = [index2label[pred] for pred in preds]
+            dev_df['预测结果'] = preds
+            dev_df.to_excel(os.path.join(args.output_dir, checkpoint+'_eval_results.xlsx'), index=False)
 
     return results
 

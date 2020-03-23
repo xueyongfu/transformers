@@ -56,7 +56,7 @@ from transformers import (
     get_linear_schedule_with_warmup,
     squad_convert_examples_to_features,
 )
-from transformers.data.metrics.squad_metrics import (
+from transformers import (
     compute_predictions_log_probs,
     compute_predictions_logits,
     squad_evaluate,
