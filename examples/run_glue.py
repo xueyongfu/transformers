@@ -96,7 +96,7 @@ def set_seed(args):
 def train(args, train_dataset, model, tokenizer):
     """ Train the model """
     if args.local_rank in [-1, 0]:
-        tb_writer = SummaryWriter(log_dir=os.path.join(args.output_dir,'runs'))
+        tb_writer = SummaryWriter(comment=args.log_name)
 
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
     train_sampler = RandomSampler(train_dataset) if args.local_rank == -1 else DistributedSampler(train_dataset)
@@ -233,7 +233,7 @@ def train(args, train_dataset, model, tokenizer):
                     if (
                         args.local_rank == -1 and args.evaluate_during_training
                     ):  # Only evaluate when single GPU otherwise metrics may not average well
-                        results,_ = evaluate(args, model, tokenizer)
+                        results,_,_ = evaluate(args, model, tokenizer)
                         for key, value in results.items():
                             eval_key = "eval_{}".format(key)
                             logs[eval_key] = value
@@ -332,6 +332,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
         eval_loss = eval_loss / nb_eval_steps
         if args.output_mode == "classification":
+            preds_prob = preds
             preds = np.argmax(preds, axis=1)
         elif args.output_mode == "regression":
             preds = np.squeeze(preds)
@@ -345,7 +346,7 @@ def evaluate(args, model, tokenizer, prefix=""):
                 logger.info("  %s = %s", key, str(result[key]))
                 writer.write("%s = %s\n" % (key, str(result[key])))
 
-    return results, preds
+    return results, preds, preds_prob
 
 
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):
@@ -412,19 +413,19 @@ def main():
     # Required parameters
     parser.add_argument(
         "--data_dir",
-        default='/home/xyf/桌面/Disk/NLP语料/文本分类/ChnSentiCorp/ChnSentiCorp情感分析酒店评论',
+        default='',
         type=str,
         help="The input data dir. Should contain the .tsv files (or other data files) for the task.",
     )
     parser.add_argument(
         "--model_type",
-        default='bert',
+        default='',
         type=str,
         help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()),
     )
     parser.add_argument(
         "--model_name_or_path",
-        default='/home/xyf/models/chinese/bert/pytorch/bert-base-chinese',
+        default='',
         type=str,
         help="Path to pre-trained model or shortcut name selected in the list: " + ", ".join(ALL_MODELS),
     )
@@ -433,6 +434,12 @@ def main():
         default='sst-2',
         type=str,
         help="The name of the task to train selected in the list: " + ", ".join(processors.keys()),
+    )
+    parser.add_argument(
+        "--log_name",
+        default='',
+        type=str,
+        help="The name of the task log",
     )
     parser.add_argument(
         "--output_dir",
@@ -459,18 +466,18 @@ def main():
     )
     parser.add_argument(
         "--max_seq_length",
-        default=100,
+        default=512,
         type=int,
         help="The maximum total input sequence length after tokenization. Sequences longer "
         "than this will be truncated, sequences shorter will be padded.",
     )
-    parser.add_argument("--do_train", default=True, action="store_true",  help="Whether to run training.")
-    parser.add_argument("--do_eval", default=True, action="store_true",  help="Whether to run eval on the dev set.")
+    parser.add_argument("--do_train",  action="store_true",  help="Whether to run training.")
+    parser.add_argument("--do_eval",  action="store_true",  help="Whether to run eval on the dev set.")
     parser.add_argument(
-        "--evaluate_during_training",  default=True,  type=bool, help="Run evaluation during training at each logging step.",
+        "--evaluate_during_training",  action="store_true", help="Run evaluation during training at each logging step.",
     )
     parser.add_argument(
-        "--do_lower_case",  default=True, action="store_true",  help="Set this flag if you are using an uncased model.",
+        "--do_lower_case",   action="store_true",  help="Set this flag if you are using an uncased model.",
     )
 
     parser.add_argument(
@@ -499,15 +506,15 @@ def main():
 
     parser.add_argument("--logging_steps", type=int, default=500, help="Log every X updates steps.")
     parser.add_argument("--save_steps", type=int, default=500, help="Save checkpoint every X updates steps.")
-    parser.add_argument("--eval_all_checkpoints", default=True,  action="store_true",
+    parser.add_argument("--eval_all_checkpoints",   action="store_true",
         help="Evaluate all checkpoints starting with the same prefix as model_name ending and ending with step number",
     )
-    parser.add_argument("--no_cuda",  default=False, action="store_true", help="Avoid using CUDA when available")
+    parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
     parser.add_argument(
-        "--overwrite_output_dir",  default=True, action="store_true", help="Overwrite the content of the output directory",
+        "--overwrite_output_dir",  action="store_true", help="Overwrite the content of the output directory",
     )
     parser.add_argument(
-        "--overwrite_cache",  default=True,  action="store_true", help="Overwrite the cached training and evaluation sets",
+        "--overwrite_cache",   action="store_true", help="Overwrite the cached training and evaluation sets",
     )
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
 
@@ -522,6 +529,29 @@ def main():
     parser.add_argument("--server_ip", type=str, default="", help="For distant debugging.")
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
     args = parser.parse_args()
+
+
+    # 自定义参数
+    args.data_dir = '/root/NLP语料/ChnSentiCorp情感分析酒店评论'
+    args.model_type = 'bert'
+    args.model_name_or_path = '/root/models/chinese/bert/pytorch/bert-base-chinese'
+    args.task_name = 'sst-2'
+    args.log_name = '分类'
+    args.output_dir = 'output'
+    args.max_seq_length = 150
+    args.do_train = True
+    args.do_eval = True
+    args.evaluate_during_training = True
+    args.do_lower_case = True
+    args.per_gpu_train_batch_size = 16
+    args.per_gpu_eval_batch_size = 16
+    args.gradient_accumulation_steps = 2
+    args.learning_rate = 5e-5
+    args.num_train_epochs = 5
+    args.warmup_steps = 100
+    args.overwrite_output_dir = True
+    args.overwrite_cache = True
+
 
     if (
         os.path.exists(args.output_dir)
@@ -661,16 +691,33 @@ def main():
 
             model = model_class.from_pretrained(checkpoint)
             model.to(args.device)
-            result, preds = evaluate(args, model, tokenizer, prefix=prefix)
+            result, preds, preds_prob = evaluate(args, model, tokenizer, prefix=prefix)
             result = dict((k + "_{}".format(global_step), v) for k, v in result.items())
             results.update(result)
             
             # 保存预测结果
             dev_df = pd.read_csv(os.path.join(args.data_dir, 'dev.tsv'),sep='\t')
-            assert len(dev_df) == len(preds)
+            assert len(dev_df) == len(preds) == len(preds_prob)
             preds = [index2label[pred] for pred in preds]
             dev_df['预测结果'] = preds
-            dev_df.to_excel(os.path.join(args.output_dir, checkpoint+'_eval_results.xlsx'), index=False)
+            # dev_df.to_excel(os.path.join(args.output_dir, checkpoint+'_eval_results.xlsx'), index=False)
+            # prob_df = pd.DataFrame(preds_prob,columns=label_list)
+
+            import operator
+            import json
+            ds = []
+            preds_prob = preds_prob.tolist()
+            for prob in preds_prob:
+                dic = {}
+                for key,value in zip(label_list, prob):
+                    dic[key] = value
+                dic = sorted(dic.items(), key=operator.itemgetter(0),reverse=True)
+                dic = json.dumps(dic, ensure_ascii=False)
+                ds.append(dic)
+            assert len(dev_df) == len(ds)
+            dev_df['概率分布'] = ds
+            dev_df.to_excel(os.path.join(args.output_dir, checkpoint + '_eval_resultsz_probs.xlsx'), index=False)
+
 
     return results
 

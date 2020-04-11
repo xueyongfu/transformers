@@ -483,34 +483,31 @@ def main():
 
     # Required parameters
     parser.add_argument(
-        "--train_file", default=None, type=str, required=True, help="SWAG csv for training. E.g., train.csv"
+        "--train_file", default='/home/xyf/桌面/Disk/NLP语料/swagaf/data/train.csv', type=str,
+        help="SWAG csv for training. E.g., train.csv"
     )
     parser.add_argument(
         "--predict_file",
-        default=None,
+        default='/home/xyf/桌面/Disk/NLP语料/swagaf/data/val.csv',
         type=str,
-        required=True,
         help="SWAG csv for predictions. E.g., val.csv or test.csv",
     )
     parser.add_argument(
         "--model_type",
-        default=None,
+        default='bert',
         type=str,
-        required=True,
         help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()),
     )
     parser.add_argument(
         "--model_name_or_path",
-        default=None,
+        default='/home/xyf/models/english/bert/pytorch/bert-base-cased',
         type=str,
-        required=True,
         help="Path to pre-trained model or shortcut name selected in the list: " + ", ".join(ALL_MODELS),
     )
     parser.add_argument(
         "--output_dir",
-        default=None,
+        default='output',
         type=str,
-        required=True,
         help="The output directory where the model checkpoints and predictions will be written.",
     )
 
@@ -526,18 +523,18 @@ def main():
     )
     parser.add_argument(
         "--max_seq_length",
-        default=384,
+        default=20,
         type=int,
         help="The maximum total input sequence length after tokenization. Sequences "
         "longer than this will be truncated, and sequences shorter than this will be padded.",
     )
-    parser.add_argument("--do_train", action="store_true", help="Whether to run training.")
-    parser.add_argument("--do_eval", action="store_true", help="Whether to run eval on the dev set.")
+    parser.add_argument("--do_train", default=True, action="store_true", help="Whether to run training.")
+    parser.add_argument("--do_eval", default=True, action="store_true", help="Whether to run eval on the dev set.")
     parser.add_argument(
-        "--evaluate_during_training", action="store_true", help="Rul evaluation during training at each logging step."
+        "--evaluate_during_training", default=True, action="store_true", help="Rul evaluation during training at each logging step."
     )
     parser.add_argument(
-        "--do_lower_case", action="store_true", help="Set this flag if you are using an uncased model."
+        "--do_lower_case", default=True, action="store_true", help="Set this flag if you are using an uncased model."
     )
 
     parser.add_argument("--per_gpu_train_batch_size", default=8, type=int, help="Batch size per GPU/CPU for training.")
@@ -574,10 +571,10 @@ def main():
     )
     parser.add_argument("--no_cuda", action="store_true", help="Whether not to use CUDA when available")
     parser.add_argument(
-        "--overwrite_output_dir", action="store_true", help="Overwrite the content of the output directory"
+        "--overwrite_output_dir", default=True,action="store_true", help="Overwrite the content of the output directory"
     )
     parser.add_argument(
-        "--overwrite_cache", action="store_true", help="Overwrite the cached training and evaluation sets"
+        "--overwrite_cache",default=True, action="store_true", help="Overwrite the cached training and evaluation sets"
     )
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
 
