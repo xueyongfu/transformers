@@ -6,7 +6,7 @@ from .utils import require_torch
 
 
 if is_torch_available():
-    from transformers.activations import _gelu_python, get_activation, gelu_new
+    from transformers import _gelu_python, get_activation, gelu_new
     import torch
 
 

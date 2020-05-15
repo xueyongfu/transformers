@@ -17,7 +17,7 @@
 import unittest
 
 from transformers import PreTrainedTokenizer
-from transformers.tokenization_gpt2 import GPT2Tokenizer
+from transformers import GPT2Tokenizer
 
 from .utils import slow
 

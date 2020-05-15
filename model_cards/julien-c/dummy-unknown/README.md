@@ -9,7 +9,7 @@ tags:
 ```python
 import json
 import os
-from transformers.configuration_roberta import RobertaConfig
+from transformers import RobertaConfig
 from transformers import RobertaForMaskedLM, TFRobertaForMaskedLM
 
 DIRNAME = "./dummy-unknown"

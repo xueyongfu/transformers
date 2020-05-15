@@ -1,7 +1,7 @@
 
 
 
-export BERT_BASE_DIR=/home/xyf/models/chinese/bert/tensorflow/multi_cased_L-12_H-768_A-12
+export BERT_BASE_DIR=/home/xyf/models/chinese/bert/tensorflow/wwm/wwm_L-12_H-768_A-12
 
 
 transformers-cli convert --model_type bert \

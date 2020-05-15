@@ -2,7 +2,7 @@ import unittest
 from typing import Iterable, List, Optional
 
 from transformers import pipeline
-from transformers.pipelines import (
+from transformers import (
     FeatureExtractionPipeline,
     FillMaskPipeline,
     NerPipeline,

@@ -24,7 +24,7 @@ from .utils import require_tf
 
 
 if is_tf_available():
-    from transformers.modeling_tf_distilbert import (
+    from transformers import (
         TFDistilBertModel,
         TFDistilBertForMaskedLM,
         TFDistilBertForQuestionAnswering,

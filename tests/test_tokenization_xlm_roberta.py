@@ -16,7 +16,7 @@
 
 import unittest
 
-from transformers.tokenization_xlm_roberta import XLMRobertaTokenizer
+from transformers import XLMRobertaTokenizer
 
 from .utils import slow
 

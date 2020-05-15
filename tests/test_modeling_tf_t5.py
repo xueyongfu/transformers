@@ -24,7 +24,7 @@ from .utils import CACHE_DIR, require_tf, slow
 
 
 if is_tf_available():
-    from transformers.modeling_tf_t5 import TFT5Model, TFT5WithLMHeadModel
+    from transformers import TFT5Model, TFT5WithLMHeadModel
 
 
 @require_tf

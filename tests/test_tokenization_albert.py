@@ -17,7 +17,7 @@
 import os
 import unittest
 
-from transformers.tokenization_albert import AlbertTokenizer
+from transformers import AlbertTokenizer
 
 from .test_tokenization_common import TokenizerTesterMixin
 

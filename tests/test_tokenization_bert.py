@@ -17,7 +17,7 @@
 import os
 import unittest
 
-from transformers.tokenization_bert import (
+from transformers import (
     VOCAB_FILES_NAMES,
     BasicTokenizer,
     BertTokenizer,

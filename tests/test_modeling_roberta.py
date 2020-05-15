@@ -32,8 +32,8 @@ if is_torch_available():
         RobertaForSequenceClassification,
         RobertaForTokenClassification,
     )
-    from transformers.modeling_roberta import RobertaEmbeddings, RobertaForMultipleChoice, RobertaForQuestionAnswering
-    from transformers.modeling_roberta import ROBERTA_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import RobertaEmbeddings, RobertaForMultipleChoice, RobertaForQuestionAnswering
+    from transformers import ROBERTA_PRETRAINED_MODEL_ARCHIVE_MAP
     from transformers.modeling_utils import create_position_ids_from_input_ids
 
 

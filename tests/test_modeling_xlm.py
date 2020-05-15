@@ -33,7 +33,7 @@ if is_torch_available():
         XLMForSequenceClassification,
         XLMForQuestionAnsweringSimple,
     )
-    from transformers.modeling_xlm import XLM_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import XLM_PRETRAINED_MODEL_ARCHIVE_MAP
 
 
 @require_torch

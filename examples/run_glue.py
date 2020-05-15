@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import random
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 import pandas as pd
 import numpy as np
@@ -471,13 +472,13 @@ def main():
         help="The maximum total input sequence length after tokenization. Sequences longer "
         "than this will be truncated, sequences shorter will be padded.",
     )
-    parser.add_argument("--do_train",  action="store_true",  help="Whether to run training.")
-    parser.add_argument("--do_eval",  action="store_true",  help="Whether to run eval on the dev set.")
+    parser.add_argument("--do_train", action='store_true', help="Whether to run training.")
+    parser.add_argument("--do_eval",  action='store_true',  help="Whether to run eval on the dev set.")
     parser.add_argument(
-        "--evaluate_during_training",  action="store_true", help="Run evaluation during training at each logging step.",
+        "--evaluate_during_training", action='store_true', help="Run evaluation during training at each logging step.",
     )
     parser.add_argument(
-        "--do_lower_case",   action="store_true",  help="Set this flag if you are using an uncased model.",
+        "--do_lower_case", action='store_true',  help="Set this flag if you are using an uncased model.",
     )
 
     parser.add_argument(
@@ -509,12 +510,12 @@ def main():
     parser.add_argument("--eval_all_checkpoints",   action="store_true",
         help="Evaluate all checkpoints starting with the same prefix as model_name ending and ending with step number",
     )
-    parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
+    parser.add_argument("--no_cuda", action='store_true', help="Avoid using CUDA when available")
     parser.add_argument(
-        "--overwrite_output_dir",  action="store_true", help="Overwrite the content of the output directory",
+        "--overwrite_output_dir", action='store_true', help="Overwrite the content of the output directory",
     )
     parser.add_argument(
-        "--overwrite_cache",   action="store_true", help="Overwrite the cached training and evaluation sets",
+        "--overwrite_cache",  action='store_true', help="Overwrite the cached training and evaluation sets",
     )
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
 
@@ -531,26 +532,28 @@ def main():
     args = parser.parse_args()
 
 
-    # 自定义参数
-    args.data_dir = '/root/NLP语料/ChnSentiCorp情感分析酒店评论'
-    args.model_type = 'bert'
-    args.model_name_or_path = '/root/models/chinese/bert/pytorch/bert-base-chinese'
-    args.task_name = 'sst-2'
-    args.log_name = '分类'
-    args.output_dir = 'output'
-    args.max_seq_length = 150
-    args.do_train = True
-    args.do_eval = True
-    args.evaluate_during_training = True
-    args.do_lower_case = True
-    args.per_gpu_train_batch_size = 16
-    args.per_gpu_eval_batch_size = 16
-    args.gradient_accumulation_steps = 2
-    args.learning_rate = 5e-5
-    args.num_train_epochs = 5
-    args.warmup_steps = 100
-    args.overwrite_output_dir = True
-    args.overwrite_cache = True
+    # # 自定义参数
+    # args.data_dir = '/root/NLP语料/文本分类/ChnSentiCorp/ChnSentiCorp情感分析酒店评论'
+    # args.model_type = 'bert'
+    # args.model_name_or_path = '/root/models/chinese/bert/pytorch/bert-base-chinese'
+    # args.task_name = 'sst-2'
+    # args.log_name = '分类'
+    # args.output_dir = 'output'
+    # args.max_seq_length = 100
+    # args.do_train = True
+    # args.do_eval = True
+    # args.evaluate_during_training = True
+    # args.do_lower_case = True
+    # args.per_gpu_train_batch_size = 16
+    # args.per_gpu_eval_batch_size = 16
+    # args.gradient_accumulation_steps = 2
+    # args.learning_rate = 5e-5
+    # args.num_train_epochs = 1
+    # args.warmup_steps = 0
+    # args.overwrite_output_dir = True
+    # args.overwrite_cache = True
+    # args.logging_steps = 50
+    # args.save_steps = 50
 
 
     if (
@@ -700,9 +703,11 @@ def main():
             assert len(dev_df) == len(preds) == len(preds_prob)
             preds = [index2label[pred] for pred in preds]
             dev_df['预测结果'] = preds
-            # dev_df.to_excel(os.path.join(args.output_dir, checkpoint+'_eval_results.xlsx'), index=False)
-            # prob_df = pd.DataFrame(preds_prob,columns=label_list)
 
+            # 保存预测结果
+            dev_df.to_excel(os.path.join(args.output_dir, checkpoint+'_eval_results.xlsx'), index=False)
+
+            # 保存预测的概率分布
             import operator
             import json
             ds = []
@@ -717,7 +722,6 @@ def main():
             assert len(dev_df) == len(ds)
             dev_df['概率分布'] = ds
             dev_df.to_excel(os.path.join(args.output_dir, checkpoint + '_eval_resultsz_probs.xlsx'), index=False)
-
 
     return results
 

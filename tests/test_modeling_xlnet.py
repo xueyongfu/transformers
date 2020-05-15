@@ -35,7 +35,7 @@ if is_torch_available():
         XLNetForTokenClassification,
         XLNetForQuestionAnswering,
     )
-    from transformers.modeling_xlnet import XLNET_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import XLNET_PRETRAINED_MODEL_ARCHIVE_MAP
 
 
 @require_torch

@@ -33,12 +33,12 @@ if is_torch_available():
         BartForSequenceClassification,
         BartConfig,
     )
-    from transformers.modeling_bart import (
+    from transformers import (
         BART_PRETRAINED_MODEL_ARCHIVE_MAP,
         shift_tokens_right,
         _prepare_bart_decoder_inputs,
     )
-    from transformers.tokenization_bart import BartTokenizer
+    from transformers import BartTokenizer
 
 
 @require_torch

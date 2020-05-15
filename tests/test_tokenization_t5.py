@@ -18,7 +18,7 @@ import os
 import unittest
 
 from transformers.tokenization_t5 import T5Tokenizer
-from transformers.tokenization_xlnet import SPIECE_UNDERLINE
+from transformers import SPIECE_UNDERLINE
 
 from .test_tokenization_common import TokenizerTesterMixin
 

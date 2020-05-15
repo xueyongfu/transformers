@@ -24,7 +24,7 @@ from .utils import CACHE_DIR, require_tf, slow
 
 
 if is_tf_available():
-    from transformers.modeling_tf_albert import (
+    from transformers import (
         TFAlbertModel,
         TFAlbertForMaskedLM,
         TFAlbertForSequenceClassification,

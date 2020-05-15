@@ -25,7 +25,7 @@ from .utils import CACHE_DIR, require_tf, slow
 
 if is_tf_available():
     import tensorflow as tf
-    from transformers.modeling_tf_gpt2 import (
+    from transformers import (
         TFGPT2Model,
         TFGPT2LMHeadModel,
         TFGPT2DoubleHeadsModel,

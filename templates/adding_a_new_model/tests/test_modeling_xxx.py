@@ -32,7 +32,7 @@ if is_torch_available():
         XxxForSequenceClassification,
         XxxForTokenClassification,
     )
-    from transformers.modeling_xxx import XXX_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import XXX_PRETRAINED_MODEL_ARCHIVE_MAP
 
 
 @require_torch

@@ -16,7 +16,7 @@ from transformers import (
     is_torch_available,
 )
 from transformers.tokenization_distilbert import DistilBertTokenizerFast
-from transformers.tokenization_openai import OpenAIGPTTokenizerFast
+from transformers import OpenAIGPTTokenizerFast
 from transformers.tokenization_roberta import RobertaTokenizerFast
 from transformers.tokenization_transfo_xl import TransfoXLTokenizerFast
 

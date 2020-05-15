@@ -32,7 +32,7 @@ if is_torch_available():
         AlbertForTokenClassification,
         AlbertForQuestionAnswering,
     )
-    from transformers.modeling_albert import ALBERT_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import ALBERT_PRETRAINED_MODEL_ARCHIVE_MAP
 
 
 @require_torch

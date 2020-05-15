@@ -17,8 +17,8 @@
 import os
 import unittest
 
-from transformers.tokenization_bert import WordpieceTokenizer
-from transformers.tokenization_bert_japanese import (
+from transformers import WordpieceTokenizer
+from transformers import (
     VOCAB_FILES_NAMES,
     BertJapaneseTokenizer,
     CharacterTokenizer,

@@ -27,7 +27,7 @@ from .utils import CACHE_DIR, require_torch, slow, torch_device
 if is_torch_available():
     import torch
     from transformers import TransfoXLConfig, TransfoXLModel, TransfoXLLMHeadModel
-    from transformers.modeling_transfo_xl import TRANSFO_XL_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import TRANSFO_XL_PRETRAINED_MODEL_ARCHIVE_MAP
 
 
 @require_torch

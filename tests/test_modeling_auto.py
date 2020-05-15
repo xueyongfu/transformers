@@ -38,8 +38,8 @@ if is_torch_available():
         AutoModelForQuestionAnswering,
         BertForQuestionAnswering,
     )
-    from transformers.modeling_bert import BERT_PRETRAINED_MODEL_ARCHIVE_MAP
-    from transformers.modeling_auto import (
+    from transformers import BERT_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import (
         MODEL_MAPPING,
         MODEL_FOR_PRETRAINING_MAPPING,
         MODEL_FOR_QUESTION_ANSWERING_MAPPING,

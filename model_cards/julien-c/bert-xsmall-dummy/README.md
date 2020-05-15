@@ -3,9 +3,9 @@
 
 ```python
 from transformers.configuration_bert import BertConfig
-from transformers.modeling_bert import BertForMaskedLM
-from transformers.modeling_tf_bert import TFBertForMaskedLM
-from transformers.tokenization_bert import BertTokenizer
+from transformers import BertForMaskedLM
+from transformers import TFBertForMaskedLM
+from transformers import BertTokenizer
 
 
 SMALL_MODEL_IDENTIFIER = "julien-c/bert-xsmall-dummy"

@@ -25,7 +25,7 @@ from .utils import CACHE_DIR, require_tf, slow
 
 if is_tf_available():
     import tensorflow as tf
-    from transformers.modeling_tf_bert import (
+    from transformers import (
         TFBertModel,
         TFBertForMaskedLM,
         TFBertForNextSentencePrediction,

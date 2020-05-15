@@ -32,7 +32,7 @@ if is_torch_available():
         FlaubertForQuestionAnsweringSimple,
         FlaubertForSequenceClassification,
     )
-    from transformers.modeling_flaubert import FLAUBERT_PRETRAINED_MODEL_ARCHIVE_MAP
+    from transformers import FLAUBERT_PRETRAINED_MODEL_ARCHIVE_MAP
 
 
 @require_torch
