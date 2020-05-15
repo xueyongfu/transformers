@@ -532,28 +532,28 @@ def main():
     args = parser.parse_args()
 
 
-    # # 自定义参数
-    # args.data_dir = '/root/NLP语料/文本分类/ChnSentiCorp/ChnSentiCorp情感分析酒店评论'
-    # args.model_type = 'bert'
-    # args.model_name_or_path = '/root/models/chinese/bert/pytorch/bert-base-chinese'
-    # args.task_name = 'sst-2'
-    # args.log_name = '分类'
-    # args.output_dir = 'output'
-    # args.max_seq_length = 100
-    # args.do_train = True
-    # args.do_eval = True
-    # args.evaluate_during_training = True
-    # args.do_lower_case = True
-    # args.per_gpu_train_batch_size = 16
-    # args.per_gpu_eval_batch_size = 16
-    # args.gradient_accumulation_steps = 2
-    # args.learning_rate = 5e-5
-    # args.num_train_epochs = 1
-    # args.warmup_steps = 0
-    # args.overwrite_output_dir = True
-    # args.overwrite_cache = True
-    # args.logging_steps = 50
-    # args.save_steps = 50
+    # 自定义参数
+    args.data_dir = 'Data/csi_train'
+    args.model_type = 'bert'
+    args.model_name_or_path = os.path.expanduser('~') + '/models/chinese/bert/pytorch/bert-base-chinese'
+    args.task_name = 'sst-2'
+    args.log_name = '分类'
+    args.output_dir = 'output'
+    args.max_seq_length = 90
+    args.do_train = True
+    args.do_eval = True
+    args.evaluate_during_training = True
+    args.do_lower_case = True
+    args.per_gpu_train_batch_size = 64
+    args.per_gpu_eval_batch_size = 64
+    args.gradient_accumulation_steps = 1
+    args.learning_rate = 5e-5
+    args.num_train_epochs = 10
+    args.warmup_steps = 100
+    args.overwrite_output_dir = True
+    args.overwrite_cache = True
+    args.logging_steps = 300
+    args.save_steps = 300
 
 
     if (

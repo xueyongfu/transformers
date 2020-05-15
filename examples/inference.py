@@ -333,22 +333,22 @@ def main():
     args = parser.parse_args()
 
     # 自定义参数
-    args.data_dir = 'Data'
+    args.data_dir = 'Data/csi_train'
     args.model_type = 'bert'
-    args.model_name_or_path = '/root/models/chinese/bert/pytorch/bert-base-chinese'
+    args.model_name_or_path = os.path.expanduser('~')+'models/chinese/bert/pytorch/bert-base-chinese'
     args.task_name = 'sst-2'
     args.log_name = '分类'
-    args.output_dir = 'output_3'
-    args.max_seq_length = 200
-    args.do_train = False
+    args.output_dir = 'output'
+    args.max_seq_length = 90
+    args.do_train = True
     args.do_eval = True
     args.evaluate_during_training = True
     args.do_lower_case = True
-    args.per_gpu_train_batch_size = 16
-    args.per_gpu_eval_batch_size = 16
-    args.gradient_accumulation_steps = 2
+    args.per_gpu_train_batch_size = 64
+    args.per_gpu_eval_batch_size = 64
+    args.gradient_accumulation_steps = 1
     args.learning_rate = 5e-5
-    args.num_train_epochs = 8
+    args.num_train_epochs = 10
     args.warmup_steps = 100
 
 
