@@ -313,7 +313,7 @@ class Sst2Processor(DataProcessor):
     def get_labels(self):
         """See base class."""
         # return ["0",'1']
-        return ['与DLR相关其他服务', '服务启动', '品质', '服务顾问', '交车', '回访', '经销商设施', '厂家相关']
+        return ['正面', '负面']
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""

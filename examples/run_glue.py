@@ -4,8 +4,9 @@ import glob
 import json
 import logging
 import os
+import configparser
 import random
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import pandas as pd
 import numpy as np
@@ -531,29 +532,32 @@ def main():
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
     args = parser.parse_args()
 
+    con = configparser.ConfigParser()
+    con.read('config.ini')
+    items = dict(con.items('config_01'))
 
-    # 自定义参数
-    args.data_dir = 'Data/csi_train'
-    args.model_type = 'bert'
-    args.model_name_or_path = os.path.expanduser('~') + '/models/chinese/bert/pytorch/bert-base-chinese'
-    args.task_name = 'sst-2'
-    args.log_name = '分类'
-    args.output_dir = 'output'
-    args.max_seq_length = 90
-    args.do_train = True
-    args.do_eval = True
-    args.evaluate_during_training = True
-    args.do_lower_case = True
-    args.per_gpu_train_batch_size = 64
-    args.per_gpu_eval_batch_size = 64
-    args.gradient_accumulation_steps = 1
-    args.learning_rate = 5e-5
-    args.num_train_epochs = 10
-    args.warmup_steps = 100
-    args.overwrite_output_dir = True
-    args.overwrite_cache = True
-    args.logging_steps = 300
-    args.save_steps = 300
+    args.data_dir = items['data_dir']
+    args.model_type = items['model_type']
+    args.model_name_or_path = eval(items['model_name_or_path'])
+    args.task_name = items['task_name']
+    args.log_name = items['log_name']
+    args.output_dir = items['output_dir']
+    args.max_seq_length = eval(items['max_seq_length'])
+    args.do_train = eval(items['do_train'])
+    args.do_eval = eval(items['do_eval'])
+    args.evaluate_during_training = eval(items['evaluate_during_training'])
+    args.do_lower_case = eval(items['do_lower_case'])
+    args.per_gpu_train_batch_size = eval(items['per_gpu_train_batch_size'])
+    args.per_gpu_eval_batch_size = eval(items['per_gpu_eval_batch_size'])
+    args.gradient_accumulation_steps = eval(items['gradient_accumulation_steps'])
+    args.learning_rate = eval(items['learning_rate'])
+    args.num_train_epochs = eval(items['num_train_epochs'])
+    args.warmup_steps = eval(items['warmup_steps'])
+    args.overwrite_output_dir = eval(items['overwrite_output_dir'])
+    args.overwrite_cache = eval(items['overwrite_cache'])
+    args.logging_steps = eval(items['logging_steps'])
+    args.save_steps = eval(items['save_steps'])
+    args.eval_all_checkpoints = eval(items['eval_all_checkpoints'])
 
 
     if (
@@ -705,23 +709,23 @@ def main():
             dev_df['预测结果'] = preds
 
             # 保存预测结果
-            dev_df.to_excel(os.path.join(args.output_dir, checkpoint+'_eval_results.xlsx'), index=False)
+            dev_df.to_excel(os.path.join(checkpoint+'_eval_results.xlsx'), index=False)
 
             # 保存预测的概率分布
-            import operator
-            import json
-            ds = []
-            preds_prob = preds_prob.tolist()
-            for prob in preds_prob:
-                dic = {}
-                for key,value in zip(label_list, prob):
-                    dic[key] = value
-                dic = sorted(dic.items(), key=operator.itemgetter(0),reverse=True)
-                dic = json.dumps(dic, ensure_ascii=False)
-                ds.append(dic)
-            assert len(dev_df) == len(ds)
-            dev_df['概率分布'] = ds
-            dev_df.to_excel(os.path.join(args.output_dir, checkpoint + '_eval_resultsz_probs.xlsx'), index=False)
+            # import operator
+            # import json
+            # ds = []
+            # preds_prob = preds_prob.tolist()
+            # for prob in preds_prob:
+            #     dic = {}
+            #     for key,value in zip(label_list, prob):
+            #         dic[key] = value
+            #     dic = sorted(dic.items(), key=operator.itemgetter(0),reverse=True)
+            #     dic = json.dumps(dic, ensure_ascii=False)
+            #     ds.append(dic)
+            # assert len(dev_df) == len(ds)
+            # dev_df['概率分布'] = ds
+            # dev_df.to_excel(os.path.join( checkpoint + '_eval_resultsz_probs.xlsx'), index=False)
 
     return results
 
