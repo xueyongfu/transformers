@@ -1,10 +1,10 @@
 
 
 
-export BERT_BASE_DIR=/home/xyf/models/chinese/bert/tensorflow/wwm/wwm_L-12_H-768_A-12
+export BERT_BASE_DIR=/root/models/english/xlnet/tensorflow/xlnet_cased_L-24_H-1024_A-16
 
 
-transformers-cli convert --model_type bert \
-  --tf_checkpoint $BERT_BASE_DIR/bert_model.ckpt \
-  --config $BERT_BASE_DIR/bert_config.json \
-  --pytorch_dump_output $BERT_BASE_DIR/pytorch_model.bin
+transformers-cli convert --model_type xlnet \
+  --tf_checkpoint $BERT_BASE_DIR/xlnet_model.ckpt \
+  --config $BERT_BASE_DIR/xlnet_config.json \
+  --pytorch_dump_output $BERT_BASE_DIR/

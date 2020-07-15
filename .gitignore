@@ -1,5 +1,7 @@
 
 examples/Data
+examples/output
+examples/runs
 
 
 # Initially taken from Github's Python gitignore file

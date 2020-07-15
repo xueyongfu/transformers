@@ -6,7 +6,6 @@ import logging
 import os
 import configparser
 import random
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import pandas as pd
 import numpy as np
@@ -341,7 +340,7 @@ def evaluate(args, model, tokenizer, prefix=""):
         result = compute_metrics(eval_task, preds, out_label_ids)
         results.update(result)
 
-        output_eval_file = os.path.join(eval_output_dir, prefix, "eval_results.txt")
+        output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
         with open(output_eval_file, "w") as writer:
             logger.info("***** Eval results {} *****".format(prefix))
             for key in sorted(result.keys()):
@@ -534,7 +533,7 @@ def main():
 
     con = configparser.ConfigParser()
     con.read('config.ini')
-    items = dict(con.items('config_01'))
+    items = dict(con.items('bert'))
 
     args.data_dir = items['data_dir']
     args.model_type = items['model_type']
@@ -712,20 +711,20 @@ def main():
             dev_df.to_excel(os.path.join(checkpoint+'_eval_results.xlsx'), index=False)
 
             # 保存预测的概率分布
-            # import operator
-            # import json
-            # ds = []
-            # preds_prob = preds_prob.tolist()
-            # for prob in preds_prob:
-            #     dic = {}
-            #     for key,value in zip(label_list, prob):
-            #         dic[key] = value
-            #     dic = sorted(dic.items(), key=operator.itemgetter(0),reverse=True)
-            #     dic = json.dumps(dic, ensure_ascii=False)
-            #     ds.append(dic)
-            # assert len(dev_df) == len(ds)
-            # dev_df['概率分布'] = ds
-            # dev_df.to_excel(os.path.join( checkpoint + '_eval_resultsz_probs.xlsx'), index=False)
+            import operator
+            import json
+            ds = []
+            preds_prob = preds_prob.tolist()
+            for prob in preds_prob:
+                dic = {}
+                for key,value in zip(label_list, prob):
+                    dic[key] = value
+                dic = sorted(dic.items(), key=operator.itemgetter(0),reverse=True)
+                dic = json.dumps(dic, ensure_ascii=False)
+                ds.append(dic)
+            assert len(dev_df) == len(ds)
+            dev_df['概率分布'] = ds
+            dev_df.to_excel(os.path.join( checkpoint + '_eval_resultsz_probs.xlsx'), index=False)
 
     return results
 
