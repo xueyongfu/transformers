@@ -558,6 +558,7 @@ def main():
     args.save_steps = eval(items['save_steps'])
     args.eval_all_checkpoints = eval(items['eval_all_checkpoints'])
 
+    # 注意:注意修改模型中的类别权重
 
     if (
         os.path.exists(args.output_dir)
@@ -706,25 +707,31 @@ def main():
             assert len(dev_df) == len(preds) == len(preds_prob)
             preds = [index2label[pred] for pred in preds]
             dev_df['预测结果'] = preds
+            dev_df.to_csv(os.path.join(checkpoint+'_eval_results.csv'), index=False)
 
-            # 保存预测结果
-            dev_df.to_excel(os.path.join(checkpoint+'_eval_results.xlsx'), index=False)
+            # 分类评估
+            def metrics():
+                from sklearn.metrics import confusion_matrix,classification_report
+                print(confusion_matrix(dev_df['label'],dev_df['预测结果']))
+                print(classification_report(dev_df['label'],dev_df['预测结果']))
+            metrics()
+
 
             # 保存预测的概率分布
-            import operator
-            import json
-            ds = []
-            preds_prob = preds_prob.tolist()
-            for prob in preds_prob:
-                dic = {}
-                for key,value in zip(label_list, prob):
-                    dic[key] = value
-                dic = sorted(dic.items(), key=operator.itemgetter(0),reverse=True)
-                dic = json.dumps(dic, ensure_ascii=False)
-                ds.append(dic)
-            assert len(dev_df) == len(ds)
-            dev_df['概率分布'] = ds
-            dev_df.to_excel(os.path.join( checkpoint + '_eval_resultsz_probs.xlsx'), index=False)
+            # import operator
+            # import json
+            # ds = []
+            # preds_prob = preds_prob.tolist()
+            # for prob in preds_prob:
+            #     dic = {}
+            #     for key,value in zip(label_list, prob):
+            #         dic[key] = value
+            #     dic = sorted(dic.items(), key=operator.itemgetter(0),reverse=True)
+            #     dic = json.dumps(dic, ensure_ascii=False)
+            #     ds.append(dic)
+            # assert len(dev_df) == len(ds)
+            # dev_df['概率分布'] = ds
+            # dev_df.to_csv(os.path.join( checkpoint + '_eval_resultsz_probs.csv'), index=False)
 
     return results
 
