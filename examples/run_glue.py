@@ -6,6 +6,7 @@ import logging
 import os
 import configparser
 import random
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 import pandas as pd
 import numpy as np
@@ -537,7 +538,7 @@ def main():
 
     args.data_dir = items['data_dir']
     args.model_type = items['model_type']
-    args.model_name_or_path = items['model_name_or_path']
+    args.model_name_or_path = eval(items['model_name_or_path'])
     args.task_name = items['task_name']
     args.log_name = items['log_name']
     args.output_dir = items['output_dir']
