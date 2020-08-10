@@ -708,9 +708,22 @@ def main():
             assert len(dev_df) == len(preds) == len(preds_prob)
             preds = [index2label[pred] for pred in preds]
             dev_df['预测结果'] = preds
-
-            # 保存预测结果
             dev_df.to_csv(os.path.join(checkpoint+'_eval_results.csv'), index=False)
+
+            # 计算分类指标
+            # from sklearn.metrics import confusion_matrix
+            # confusionMmatrix = pd.DataFrame(confusion_matrix(dev_df['label'], dev_df['预测结果'],
+            #                                   labels=processor.get_labels()))
+            # confusionMmatrix.columns = processor.get_labels()
+            # confusionMmatrix.index = processor.get_labels()
+            # confusionMmatrix.to_csv('confusion_matrix.csv')
+            #
+            # from sklearn.metrics import classification_report
+            # classificationReport  = classification_report(dev_df['label'], dev_df['预测结果'],
+            #                                   labels=processor.get_labels(),output_dict=True)
+            # classificationReport = pd.DataFrame(classificationReport).transpose()
+            # classificationReport.to_csv("classificationReport.csv", index=True)
+
 
             # 保存预测的概率分布
             # import operator
